@@ -1,8 +1,11 @@
 # HParser
-A parser generator in Haskell for Haskell
+A parser generator in Haskell for Haskell.
 
 ## 1. Write a grammar
 ```haskell
+import HParser.Grammar
+import HParser.Generator
+
 grammar = Grammar [
    Rule (NonTerminal "S") [NonTerminal "E", NonTerminal "Sp"],
    Rule (NonTerminal "Sp") [],
