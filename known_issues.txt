@@ -1,0 +1,9 @@
+
+HParser -- Known Issues
+
+- There is no recognition of erratic grammars. Left recursion will result in stack overflow, grammars that are 
+  otherwise not LL(1) will probably produce incompilable parsers, etc.
+
+- Symbols, specifically Terminals have a name defined as a string. In the resulting parser, they are represented as characters.
+  Therefore, it is possibly to have a Terminal "num" in the generator, but this will generate to a token 'num', which will
+  result in an error, of course.
