@@ -22,6 +22,7 @@ Prelude> :load Example
 *Main> writeFile "TestParser.hs" (genParser grammar)
 ```
 
+Example snippet:
 ```haskell
 parse :: NonTerminal -> (Bool, [Char], [Char]) -> (Bool, [Char], [Char])
 parse _ (False, ts, a) = (False, ts, a)
