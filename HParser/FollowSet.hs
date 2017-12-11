@@ -8,8 +8,8 @@ import qualified Data.Set as S
 
 -- Follow Sets:
 -- $ in Follow{S}
--- if A -> aBC and C = ε or ε in First{C} then Follow{A} in Follow{C}	| followSetSubsets
--- if A -> aBC then First{C}\{ε} in Follow{B}							| directFollowSets
+-- if A -> aBC and C = ε or ε in First{C} then Follow{A} in Follow{C}   | followSetSubsets
+-- if A -> aBC then First{C}\{ε} in Follow{B}                           | directFollowSets
 
 -- Computes the follow set of a given non-terminal in a grammar
 followSet :: Grammar -> Symbol -> S.Set (String)
