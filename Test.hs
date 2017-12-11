@@ -153,6 +153,20 @@ followSetF3 = TestCase (
       (S.toList $ followSet grammar3 (NonTerminal "F"))
    )
 
+generateGrammar1 = TestCase (
+   assertBool "Generating a parser from grammar 1" $
+   (genParser grammar1 /= "")
+   )
+
+generateGrammar2 = TestCase (
+   assertBool "Generating a parser from grammar 2" $
+   (genParser grammar2 /= "")
+   )
+
+generateGrammar3 = TestCase (
+   assertBool "Generating a parser from grammar 3" $
+   (genParser grammar3 /= "")
+   )
 
 tests = TestList [
    TestLabel "First Sets" firstSetS1,
@@ -176,5 +190,8 @@ tests = TestList [
    TestLabel "Follow Sets" followSetA3,
    TestLabel "Follow Sets" followSetT3,
    TestLabel "Follow Sets" followSetB3,
-   TestLabel "Follow Sets" followSetF3
+   TestLabel "Follow Sets" followSetF3,
+   TestLabel "Generating parser" generateGrammar1,
+   TestLabel "Generating parser" generateGrammar2,
+   TestLabel "Generating parser" generateGrammar3
    ]
