@@ -10,7 +10,9 @@ printParser :: Grammar -> IO()
 printParser grammar = putStr $ genParser grammar
 
 genParser :: Grammar -> String
-genParser grammar = "\n" ++
+genParser grammar 
+   | syntaxSanity grammar /= "" = error ("Syntactic error(s) in grammar definition.\n"++(syntaxSanity grammar))
+   | otherwise = "\n" ++
    "data NonTerminal = " ++ (intercalate " | " (nonTerminalNames grammar)) ++ "\n\n" ++
    "parseToken :: Char -> (Bool, [Char], [Char]) -> (Bool, [Char], [Char])\n" ++
    "parseToken x (True, y:t, a)\n" ++ 

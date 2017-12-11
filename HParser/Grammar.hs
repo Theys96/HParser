@@ -1,5 +1,6 @@
 module HParser.Grammar (
-   Symbol (..), Rule (..), Grammar (..), nonTerminalNames
+   Symbol (..), Rule (..), Grammar (..), 
+   nonTerminalNames, syntaxSanity
    ) where
 
 import Data.List
@@ -37,3 +38,24 @@ instance Ord Symbol where
 
 nonTerminalNames :: Grammar -> [String]
 nonTerminalNames (Grammar rules) = nub [name | Rule (NonTerminal name) rh <- rules]
+
+syntaxSanity :: Grammar -> String
+syntaxSanity (Grammar rules) = seperateLines (map checkRuleSanity rules)
+   where
+      checkRuleSanity :: Rule -> String
+      checkRuleSanity (Rule (NonTerminal nt) rhs) = seperateLines $ map checkSymbolSanity rhs
+      checkRuleSanity (Rule lhs rhs)              = seperateLines $ (syntaxError (Rule lhs rhs)):(map checkSymbolSanity rhs)
+      
+      checkSymbolSanity :: Symbol -> String
+      checkSymbolSanity (Terminal t)
+         | length t == 1  = ""
+         | otherwise      = "A terminal with value '"++t++"' is not valid at this moment."
+      checkSymbolSanity _ = ""
+      
+      syntaxError rule = "The rule "++(show rule)++" has an invalid left hand side."
+      seperateLines (x:[]) = x
+      seperateLines (x:xs)
+         | x == ""    = seperateLines xs
+         | otherwise  = x++"\n"++(seperateLines xs)
+      seperateLines [] = ""
+

@@ -37,119 +37,117 @@ grammar3 = Grammar [
 
 -- The first and follow set tests are done with http://mdaines.github.io/grammophone/
 
-test1 = TestCase (
+firstSetS1 = TestCase (
    assertEqual "First set of S in grammar 1"
       (sort ["1", "("])
       (S.toList $ symbolFirstSet grammar1 (NonTerminal "S"))
    )
-test2 = TestCase (
+firstSetSp1 = TestCase (
    assertEqual "First set of Sp in grammar 1"
       (sort ["+",""])
       (S.toList $ symbolFirstSet grammar1 (NonTerminal "Sp"))
    )
-test3 = TestCase (
+firstSetE1 = TestCase (
    assertEqual "First set of E in grammar 1"
       (sort ["1","("])
       (S.toList $ symbolFirstSet grammar1 (NonTerminal "E"))
    )
 
-test4 = TestCase (
-   assertEqual "Follow set of S in grammar 1"
-      (sort [")", ""])
-      (S.toList $ followSet grammar1 (NonTerminal "S"))
-   )
-test5 = TestCase (
-   assertEqual "Follow set of Sp in grammar 1"
-      (sort [")",""])
-      (S.toList $ followSet grammar1 (NonTerminal "Sp"))
-   )
-test6 = TestCase (
-   assertEqual "Follow set of E in grammar 1"
-      (sort ["+",")",""])
-      (S.toList $ followSet grammar1 (NonTerminal "E"))
-   )
-
-
-test7 = TestCase (
+firstSetS2 = TestCase (
    assertEqual "First set of S in grammar 2"
       (sort ["a", "b"])
       (S.toList $ symbolFirstSet grammar2 (NonTerminal "S"))
    )
-test8 = TestCase (
+firstSetA2 = TestCase (
    assertEqual "First set of A in grammar 2"
       (sort [""])
       (S.toList $ symbolFirstSet grammar2 (NonTerminal "A"))
    )
-test9 = TestCase (
+firstSetB2 = TestCase (
    assertEqual "First set of B in grammar 2"
       (sort [""])
       (S.toList $ symbolFirstSet grammar2 (NonTerminal "B"))
    )
 
-test10 = TestCase (
-   assertEqual "Follow set of S in grammar 2"
-      (sort [""])
-      (S.toList $ followSet grammar2 (NonTerminal "S"))
-   )
-test11 = TestCase (
-   assertEqual "Follow set of A in grammar 2"
-      (sort ["a","b"])
-      (S.toList $ followSet grammar2 (NonTerminal "A"))
-   )
-test12 = TestCase (
-   assertEqual "Follow set of B in grammar 2"
-      (sort ["a","b"])
-      (S.toList $ followSet grammar2 (NonTerminal "B"))
-   )
-
-
-test13 = TestCase (
+firstSetS3 = TestCase (
    assertEqual "First set of S in grammar 3"
       (sort ["(", "x"])
       (S.toList $ symbolFirstSet grammar3 (NonTerminal "S"))
    )
-test14 = TestCase (
+firstSetA3 = TestCase (
    assertEqual "First set of A in grammar 3"
       (sort ["","+"])
       (S.toList $ symbolFirstSet grammar3 (NonTerminal "A"))
    )
-test15 = TestCase (
+firstSetT3 = TestCase (
    assertEqual "First set of T in grammar 3"
       (sort ["(","x"])
       (S.toList $ symbolFirstSet grammar3 (NonTerminal "T"))
    )
-test16 = TestCase (
+firstSetB3 = TestCase (
    assertEqual "First set of B in grammar 3"
       (sort ["","*"])
       (S.toList $ symbolFirstSet grammar3 (NonTerminal "B"))
    )
-test17 = TestCase (
+firstSetF3 = TestCase (
    assertEqual "First set of F in grammar 3"
       (sort ["(","x"])
       (S.toList $ symbolFirstSet grammar3 (NonTerminal "F"))
    )
 
-test18 = TestCase (
+followSetS1 = TestCase (
+   assertEqual "Follow set of S in grammar 1"
+      (sort [")", ""])
+      (S.toList $ followSet grammar1 (NonTerminal "S"))
+   )
+followSetSp1 = TestCase (
+   assertEqual "Follow set of Sp in grammar 1"
+      (sort [")",""])
+      (S.toList $ followSet grammar1 (NonTerminal "Sp"))
+   )
+followSetE1 = TestCase (
+   assertEqual "Follow set of E in grammar 1"
+      (sort ["+",")",""])
+      (S.toList $ followSet grammar1 (NonTerminal "E"))
+   )
+
+followSetS2 = TestCase (
+   assertEqual "Follow set of S in grammar 2"
+      (sort [""])
+      (S.toList $ followSet grammar2 (NonTerminal "S"))
+   )
+followSetA2 = TestCase (
+   assertEqual "Follow set of A in grammar 2"
+      (sort ["a","b"])
+      (S.toList $ followSet grammar2 (NonTerminal "A"))
+   )
+followSetB2 = TestCase (
+   assertEqual "Follow set of B in grammar 2"
+      (sort ["a","b"])
+      (S.toList $ followSet grammar2 (NonTerminal "B"))
+   )
+
+followSetS3 = TestCase (
    assertEqual "Follow set of S in grammar 3"
       (sort [")",""])
       (S.toList $ followSet grammar3 (NonTerminal "S"))
    )
-test19 = TestCase (
+followSetA3 = TestCase (
    assertEqual "Follow set of A in grammar 3"
       (sort [")",""])
       (S.toList $ followSet grammar3 (NonTerminal "A"))
    )
-test20 = TestCase (
+followSetT3 = TestCase (
    assertEqual "Follow set of T in grammar 3"
       (sort ["+",")",""])
       (S.toList $ followSet grammar3 (NonTerminal "T"))
    )
-test21 = TestCase (
+followSetB3 = TestCase (
    assertEqual "Follow set of B in grammar 3"
       (sort ["+",")",""])
       (S.toList $ followSet grammar3 (NonTerminal "B"))
    )
-test22 = TestCase (
+followSetF3 = TestCase (
    assertEqual "Follow set of F in grammar 3"
       (sort ["+","*",")",""])
       (S.toList $ followSet grammar3 (NonTerminal "F"))
@@ -157,26 +155,26 @@ test22 = TestCase (
 
 
 tests = TestList [
-   TestLabel "First Sets" test1,
-   TestLabel "First Sets" test2,
-   TestLabel "First Sets" test3,
-   TestLabel "First Sets" test7,
-   TestLabel "First Sets" test8,
-   TestLabel "First Sets" test9,
-   TestLabel "First Sets" test13,
-   TestLabel "First Sets" test14,
-   TestLabel "First Sets" test15,
-   TestLabel "First Sets" test16,
-   TestLabel "First Sets" test17,
-   TestLabel "Follow Sets" test4,
-   TestLabel "Follow Sets" test5,
-   TestLabel "Follow Sets" test6,
-   TestLabel "Follow Sets" test10,
-   TestLabel "Follow Sets" test11,
-   TestLabel "Follow Sets" test12,
-   TestLabel "Follow Sets" test18,
-   TestLabel "Follow Sets" test19,
-   TestLabel "Follow Sets" test20,
-   TestLabel "Follow Sets" test21,
-   TestLabel "Follow Sets" test22
+   TestLabel "First Sets" firstSetS1,
+   TestLabel "First Sets" firstSetSp1,
+   TestLabel "First Sets" firstSetE1,
+   TestLabel "First Sets" firstSetS2,
+   TestLabel "First Sets" firstSetA2,
+   TestLabel "First Sets" firstSetB2,
+   TestLabel "First Sets" firstSetS3,
+   TestLabel "First Sets" firstSetA3,
+   TestLabel "First Sets" firstSetT3,
+   TestLabel "First Sets" firstSetB3,
+   TestLabel "First Sets" firstSetF3,
+   TestLabel "Follow Sets" followSetS1,
+   TestLabel "Follow Sets" followSetSp1,
+   TestLabel "Follow Sets" followSetE1,
+   TestLabel "Follow Sets" followSetS2,
+   TestLabel "Follow Sets" followSetA2,
+   TestLabel "Follow Sets" followSetB2,
+   TestLabel "Follow Sets" followSetS3,
+   TestLabel "Follow Sets" followSetA3,
+   TestLabel "Follow Sets" followSetT3,
+   TestLabel "Follow Sets" followSetB3,
+   TestLabel "Follow Sets" followSetF3
    ]
