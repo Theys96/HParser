@@ -25,6 +25,25 @@ symbolFirstSet (Grammar rules) (Terminal symbol)
 symbolFirstSet (Grammar rules) Epsilon
    = S.singleton ""
 
+-- Find all B in A -*> BC, used by left-recusion checking
+nonTerminalFirstSet grammar (NonTerminal nt) 
+   = recursionStep grammar $ nonTerminalFirstSetStep grammar (NonTerminal nt)
+   where
+      nonTerminalFirstSetStep (Grammar rules) symbol 
+         = S.fromList [NonTerminal x | Rule (NonTerminal nt) ((NonTerminal x):rhs) <- rules, (NonTerminal nt) == symbol]
+      recursionStep grammar set
+         | recursionSet `S.isSubsetOf` set   = set
+         | otherwise                         = recursionStep grammar (S.union recursionSet set)
+            where
+               recursionSet = (S.foldr S.union S.empty) $ S.map (nonTerminalFirstSetStep grammar) set
+nonTerminalFirstSet grammar _ = S.empty
+
+-- Left-recursion checking
+ruleFirstSet grammar rule
+   | leftRecursive grammar rule = error $ "The following rule is left recursive: \n   "++(show rule)
+      where
+         leftRecursive grammar (Rule lh []) = False
+         leftRecursive grammar (Rule lh (symbol:symbols)) = S.member symbol (nonTerminalFirstSet grammar symbol)
 
 -- The first set of A -> BC is first{B}, union first{C} if epsilon in first{B}
 -- We filter out epsilon until the last symbol

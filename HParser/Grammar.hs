@@ -52,7 +52,7 @@ syntaxSanity (Grammar rules) = seperateLines (map checkRuleSanity rules)
          | otherwise      = "A terminal with value '"++t++"' is not valid at this moment."
       checkSymbolSanity _ = ""
       
-      syntaxError rule = "The rule "++(show rule)++" has an invalid left hand side."
+      syntaxError rule = "The following rule has an invalid left hand side: \n   "++(show rule)
       seperateLines (x:[]) = x
       seperateLines (x:xs)
          | x == ""    = seperateLines xs
