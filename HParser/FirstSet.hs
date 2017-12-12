@@ -16,23 +16,25 @@ firstSets (Grammar rules) = map (ruleFirstSet (Grammar rules)) rules
 symbolFirstSet (Grammar rules) (NonTerminal symbol) 
    = S.unions $ map (ruleFirstSet (Grammar rules)) rulesA
       where
-         rulesA = [Rule nt rhSide | Rule nt rhSide <- rules, nt == (NonTerminal symbol) ] -- All rules A -> ..
+         rulesA = [Rule (NonTerminal nt) rhSide | Rule (NonTerminal nt) rhSide <- rules, nt == symbol ] -- All rules A -> ..
 
 -- The first-set of a terminal is itself as a singleton
 symbolFirstSet (Grammar rules) (Terminal symbol)
-   = S.singleton symbol 
+   = S.singleton symbol
+-- Same for epsilon
+symbolFirstSet (Grammar rules) Epsilon
+   = S.singleton ""
+
 
 -- The first set of A -> BC is first{B}, union first{C} if epsilon in first{B}
-ruleFirstSet grammar (Rule lh ((NonTerminal name):symbols))
-   | S.member "" firstB = S.union firstB firstC
+-- We filter out epsilon until the last symbol
+ruleFirstSet grammar (Rule lh [symbol]) = symbolFirstSet grammar symbol
+ruleFirstSet grammar (Rule lh (symbol:symbols))
+   | S.member "" firstB = S.union (S.filter (/= "") $ firstB) firstC
    | otherwise          = firstB
       where 
-        firstB = symbolFirstSet grammar (NonTerminal name)
+        firstB = symbolFirstSet grammar symbol
         firstC = ruleFirstSet grammar (Rule lh symbols)
-
--- The first-set of A -> aB for terminal a is {a}
-ruleFirstSet grammar (Rule lh ((Terminal name):symbols))
-   = S.singleton name
 
 -- The first-set of A -> epsilon is {epsilon}
 ruleFirstSet grammar (Rule lh []) 
