@@ -28,6 +28,9 @@ instance Eq Symbol where
    (==) Epsilon Epsilon = True
    (==) _ _ = False
 
+instance Eq Rule where
+   (==) (Rule lhs1 rhs1) (Rule lhs2 rhs2) = lhs1 == lhs2 && rhs1 == rhs2
+
 instance Ord Symbol where
    (NonTerminal nt1) `compare` (NonTerminal nt2) = nt1 `compare` nt2
    (Terminal t1) `compare` (Terminal t2) = t1 `compare` t2
@@ -35,6 +38,11 @@ instance Ord Symbol where
    _ `compare` Epsilon = GT
    (Terminal _) `compare` (NonTerminal _) = LT
    (NonTerminal _) `compare` (Terminal _) = GT
+
+instance Ord Rule where
+   (Rule lhs1 rhs1) `compare` (Rule lhs2 rhs2)
+      | lhs1 == lhs2 = rhs1 `compare` rhs2
+      | otherwise = lhs1 `compare` lhs2
 
 nonTerminalNames :: Grammar -> [String]
 nonTerminalNames (Grammar rules) = nub [name | Rule (NonTerminal name) rh <- rules]

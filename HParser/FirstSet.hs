@@ -40,7 +40,7 @@ nonTerminalFirstSet grammar _ = S.empty
 
 -- Left-recursion checking
 ruleFirstSet grammar rule
-   | leftRecursive grammar rule = error $ "The following rule is left recursive: \n   "++(show rule)
+   | leftRecursive grammar rule = errorWithoutStackTrace $ "The following rule is left recursive: \n   "++(show rule)
       where
          leftRecursive grammar (Rule lh []) = False
          leftRecursive grammar (Rule lh (symbol:symbols)) = S.member symbol (nonTerminalFirstSet grammar symbol)

@@ -39,6 +39,13 @@ grammar4 = Grammar [
    Rule (Terminal "a") [Terminal "aa"]
    ]
 
+grammar5 = Grammar [
+   Rule (NonTerminal "S") [NonTerminal "E"],
+   Rule (NonTerminal "S") [Terminal "a"],
+   Rule (NonTerminal "E") [Terminal "a"],
+   Rule (NonTerminal "E") []
+   ]
+
 -- The first and follow set tests are done with http://mdaines.github.io/grammophone/
 
 firstSetS1 = TestCase (
