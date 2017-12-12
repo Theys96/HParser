@@ -6,9 +6,10 @@ import HParser.Grammar
 import Debug.Trace
 import qualified Data.Set as S
 
-firstSets :: Grammar -> [S.Set String]                 -- Combination function for the first sets of all rules in the grammar
-ruleFirstSet :: Grammar ->  Rule -> S.Set String       -- Computes the first set of a rule
-symbolFirstSet :: Grammar -> Symbol -> S.Set String    -- Computes the first set of a symbol
+firstSets :: Grammar -> [S.Set String]                    -- Combination function for the first sets of all rules in the grammar
+ruleFirstSet :: Grammar ->  Rule -> S.Set String          -- Computes the first set of a rule
+symbolFirstSet :: Grammar -> Symbol -> S.Set String       -- Computes the first set of a symbol
+nonTerminalFirstSet :: Grammar -> Symbol -> S.Set Symbol  -- Finds all B in A -*> BC
 
 firstSets (Grammar rules) = map (ruleFirstSet (Grammar rules)) rules
 
@@ -25,7 +26,7 @@ symbolFirstSet (Grammar rules) (Terminal symbol)
 symbolFirstSet (Grammar rules) Epsilon
    = S.singleton ""
 
--- Find all B in A -*> BC, used by left-recusion checking
+
 nonTerminalFirstSet grammar (NonTerminal nt) 
    = recursionStep grammar $ nonTerminalFirstSetStep grammar (NonTerminal nt)
    where
@@ -43,7 +44,10 @@ ruleFirstSet grammar rule
    | leftRecursive grammar rule = errorWithoutStackTrace $ "The following rule is left recursive: \n   "++(show rule)
       where
          leftRecursive grammar (Rule lh []) = False
-         leftRecursive grammar (Rule lh (symbol:symbols)) = S.member symbol (nonTerminalFirstSet grammar symbol)
+         leftRecursive grammar (Rule lh (symbol:symbols))
+            | S.member symbol (nonTerminalFirstSet grammar symbol) = True
+            | S.member "" (symbolFirstSet grammar symbol) = leftRecursive grammar (Rule lh symbols)
+            | otherwise = False
 
 -- The first set of A -> BC is first{B}, union first{C} if epsilon in first{B}
 -- We filter out epsilon until the last symbol
