@@ -1,7 +1,29 @@
 # HParser
-A parser generator in Haskell for Haskell.
+A parser generator in Haskell (and a bit of C) for Haskell.
 
 ## 1. Write a grammar
+```
+S : E Sp;
+
+Sp :
+   | '+' S
+   ;
+
+E : '1'
+  | '(' S ')'
+  ;
+```
+
+## 2. Convert it
+```bash
+$ cd grammars
+$ make
+cc -O2 -Wall   -c -o grammars.o grammars.c
+gcc grammars.o -o HGrammar
+$ cd ..
+$ grammars/HGrammar grammar
+```
+The resulting grammar is in Haskell:
 ```haskell
 import HParser.Grammar
 import HParser.Generator
@@ -15,7 +37,7 @@ grammar = Grammar [
    ]
 ```
 
-## 2. Check it and generate a parser from it
+## 3. Check it and generate a parser from it
 ```bash
 $ ghci
 Prelude> :load Example
