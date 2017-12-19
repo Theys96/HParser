@@ -65,5 +65,58 @@ instance Symbol NonTerminal where
    parseRule _ _ = parseFailure
 ```
 
+## 4. Load the parser and test it
+```bash
+*Main> :load TestParser
+[1 of 2] Compiling HParser.Parser   ( HParser/Parser.hs, interpreted )
+[2 of 2] Compiling Main             ( TestParser.hs, interpreted )
+Ok, 2 modules loaded.
+*Main> parser "1+1+1"
+(True,"1+1+1","")
+*Main> parser "(1+1)+(1+1)"
+(True,"(1+1)+(1+1)","")
+*Main> parser "(1+1)(1+1)"
+(False,"(1+1)","(1+1)")
+*Main> parser ""
+(False,"","")
+*Main> printParseTree $ parseTree "(1+1)+1"
+|
+`- S
+   |
+   +- E
+   |  |
+   |  +- '('
+   |  |
+   |  +- S
+   |  |  |
+   |  |  +- E
+   |  |  |  |
+   |  |  |  `- '1'
+   |  |  |
+   |  |  `- Sp
+   |  |     |
+   |  |     +- '+'
+   |  |     |
+   |  |     `- S
+   |  |        |
+   |  |        +- E
+   |  |        |  |
+   |  |        |  `- '1'
+   |  |        |
+   |  |        `- Sp
+   |  |
+   |  `- ')'
+   |
+   `- Sp
+      |
+      +- '+'
+      |
+      `- S
+         |
+         `- E
+            |
+            `- '1'
+```
+
 ## Disclaimer
 This piece of software is in an extremely early stage of development and should not be used in real-life yet.
