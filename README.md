@@ -15,25 +15,32 @@ grammar = Grammar [
    ]
 ```
 
-## 2. Generate a parser from it
+## 2. Check it and generate a parser from it
 ```bash
 $ ghci
 Prelude> :load Example
-*Main> writeFile "TestParser.hs" (genParser grammar)
+*Main> grammar
+S 	-> E Sp
+Sp 	-> ε
+Sp 	-> '+' S
+E 	-> '1'
+E 	-> '(' S ')'
+*Main> saveParser "TestParser.hs" grammar
 ```
 
 Example snippet:
 ```haskell
-parse :: NonTerminal -> (Bool, [Char], [Char]) -> (Bool, [Char], [Char])
-parse _ (False, ts, a) = (False, ts, a)
-parse S (True, '(':tokens, accepted) = parse Sp $ parse E $ (True, '(':tokens, accepted)
-parse S (True, '1':tokens, accepted) = parse Sp $ parse E $ (True, '1':tokens, accepted)
-parse Sp (True, ')':tokens, accepted) = (True, ')':tokens, accepted)
-parse Sp (True, [], accepted) =  (True, [], accepted)
-parse Sp (True, '+':tokens, accepted) = parse S $ parseToken '+' $ (True, '+':tokens, accepted)
-parse E (True, '1':tokens, accepted) = parseToken '1' $ (True, '1':tokens, accepted)
-parse E (True, '(':tokens, accepted) = parseToken ')' $ parse S $ parseToken '(' $ (True, '(':tokens, accepted)
-parse _ (_, ts, a) = (False, ts, a)
+instance Symbol NonTerminal where
+   parseEOF Sp = True
+   parseEOF _ = False
+
+   parseRule S '(' = parse E >>> parse Sp
+   parseRule S '1' = parse E >>> parse Sp
+   parseRule Sp ')' = parseEpsilon
+   parseRule Sp '+' = parseToken '+' >>> parse S
+   parseRule E '1' = parseToken '1'
+   parseRule E '(' = parseToken '(' >>> parse S >>> parseToken ')'
+   parseRule _ _ = parseFailure
 ```
 
 ## Disclaimer

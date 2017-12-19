@@ -1,4 +1,4 @@
-module HParser.Generator (printParser, genParser, generatingSets) where
+module HParser.Generator (printParser, saveParser, genParser, checkSets, generatingSets) where
 
 import qualified Data.Set as S
 import HParser.FirstSet
@@ -12,53 +12,68 @@ import Debug.Trace
 printParser :: Grammar -> IO()
 printParser grammar = putStr $ genParser grammar
 
+saveParser :: String -> Grammar -> IO()
+saveParser filename grammar = writeFile filename $ genParser grammar
+
 genParser :: Grammar -> String
 genParser grammar 
    | syntaxSanity grammar /= ""                   -- Syntax check
       = errorWithoutStackTrace (syntaxErrorText++"\n"++(syntaxSanity grammar))
-   | checkSets (generatingSets grammar) /= ""     -- Conflict check
-      = trace ("{-\n"++confictWarningText++"\n"++(checkSets $ generatingSets $ grammar)++"\n-}") parser
+   | checkSets grammar /= ""                      -- Conflict check
+      = trace ("{-\n"++confictWarningText++"\n"++(checkSets grammar)++"\n-}") parser
    | otherwise = parser
    where
       syntaxErrorText     = "Syntactic error(s) in grammar definition."
       confictWarningText  = "*** Warning: Conflict(s) in grammar definition.\n" ++
                             "    Notice that this will cause the parser to throw a warning \n" ++
                             "    when running it and make it choose the first rule."
-      parser = "\n" ++
+      parser = "\nimport HParser.Parser\n\n" ++
                "data NonTerminal = " ++ (intercalate " | " (nonTerminalNames grammar)) ++ "\n\n" ++
-               "parseToken :: Char -> (Bool, [Char], [Char]) -> (Bool, [Char], [Char])\n" ++
-               "parseToken x (True, y:t, a)\n" ++ 
-               "                          | x == y    = (True, t, a++[x])\n" ++
-               "                          | otherwise = (False, y:t, a)\n" ++
-               "parseToken _ (False, t, a)   = (False, t, a)\n" ++
-               "parseToken _ (True, [], a)   = (False, [], a)\n\n" ++
-               "parse :: NonTerminal -> (Bool, [Char], [Char]) -> (Bool, [Char], [Char])\n" ++
-               "parse _ (False, ts, a) = (False, ts, a)\n" ++
-            (parserRules grammar) ++
-               "parse _ (_, ts, a) = (False, ts, a)\n\n" ++
+               "instance Show NonTerminal where\n" ++
+               showRules ++ 
+               "instance Symbol NonTerminal where" ++
+               eofRules ++
+               "\n   parseEOF _ = False\n" ++ 
+               parseRules ++
+               "\n   parseRule _ _ = parseFailure\n\n" ++
                "parser :: [Char] -> (Bool, [Char], [Char])\n" ++
                "parser t = (status && (tokens == []), accepted, tokens)\n" ++
                "   where\n" ++
-               "      (status, tokens, accepted) = parse S (True, t, [])\n\n" ++
-               ""
+               "      (status, tokens, accepted, tree) = parse S (True, t, [], Node \"\" [])\n\n" ++
+               "parseTree :: [Char] -> ParseTree\n" ++
+               "parseTree t\n" ++
+               "   | status && (tokens == []) = tree\n" ++
+               "   | otherwise = trace \"*** Warning! The string was not accepted by the parser.\\n\" tree\n" ++
+               "   where\n" ++
+               "      (status, tokens, accepted, tree) = parse S (True, t, [], Node \"\" [])\n\n"
+      (parseRules, eofRules) = parserRules grammar
+      showRules = (concat ["   " ++ "show " ++ name ++ " = \"" ++ name ++ "\"\n" | name <- (nonTerminalNames grammar)]) ++ "\n"
 
-parserRules :: Grammar -> String
-parserRules (Grammar rules) = concat $ map (parserRulesOfRule (Grammar rules)) rules
+parserRules :: Grammar -> (String, String)
+parserRules (Grammar rules) 
+   = (concat $ map (parseRulesOfRule (Grammar rules)) rules, concat $ map (parseEOFsOfRule (Grammar rules)) rules)
    where
-      parserRulesOfRule grammar rule
-         = concat $ S.toList $ S.map (parserRuleOfToken rule) (generatingSet grammar rule)
-      parserRuleOfToken (Rule (NonTerminal symbol) rh) ""
-         = "parse " ++ symbol ++ " (True, [], accepted) = "++(parserActionsOfRule rh)++" (True, [], accepted)\n"
-      parserRuleOfToken (Rule (NonTerminal symbol) rh) token 
-         = "parse " ++ symbol ++ " (True, '" ++ token ++ "':tokens, accepted) = "++(parserActionsOfRule rh)++"(True, '" ++ token ++ "':tokens, accepted)\n"
-      parserActionsOfRule [] = ""
-      parserActionsOfRule symbols = (intercalate " $ " $ map symbolAction $ reverse symbols)++" $ "
+      parseRulesOfRule grammar rule
+         = concat $ S.toList $ S.map (parseRuleOfToken rule) (generatingSet grammar rule)
+      parseEOFsOfRule grammar rule
+         = concat $ S.toList $ S.map (parseEOFsOfToken rule) (generatingSet grammar rule)
+      
+      parseRuleOfToken _ "" = "" 
+      parseRuleOfToken (Rule (NonTerminal symbol) rh) token 
+         = "\n   parseRule " ++ symbol ++ " '" ++ token ++ "' = "++(parserActionsOfRule rh)
+      parseRuleOfToken _ _ = ""
+      parseEOFsOfToken (Rule (NonTerminal symbol) rh) ""
+         = "\n   parseEOF " ++ symbol ++ " = True"
+      parseEOFsOfToken _ _ = ""
+      
+      parserActionsOfRule [] = "parseEpsilon"
+      parserActionsOfRule symbols = (intercalate " >>> " $ map symbolAction $ symbols)
       symbolAction (NonTerminal nt) = "parse " ++ nt
       symbolAction (Terminal t) = "parseToken '" ++ t ++ "'"
 
 
-checkSets :: [(S.Set String, Rule)] -> String
-checkSets sets 
+checkSets :: Grammar -> String
+checkSets grammar 
    = seperateLines 
       [conflict (Rule lhs1 rhs1) (Rule lhs2 rhs2) | 
       (set1, (Rule lhs1 rhs1)) <- sets, 
@@ -67,6 +82,7 @@ checkSets sets
       (Rule lhs1 rhs1) < (Rule lhs2 rhs2), 
       (S.intersection set1 set2) /= S.empty]
    where
+      sets = generatingSets grammar
       conflict rule1 rule2 = "In the rules: \n   "++(show rule1)++"\n   "++(show rule2)
       seperateLines (x:[]) = x
       seperateLines (x:xs)
