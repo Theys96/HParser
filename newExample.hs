@@ -1,5 +1,5 @@
-import NewParser
+import Parser
 
-input = [(BRKTOPEN,"!"),(BRKTOPEN,"("),(ONE,"1"),(BRKTCLOSE,")"),(BRKTCLOSE,"!")]
+input = [(OPEN,"!"),(OPEN,"("),(ONE,"1"),(CLOSE,")"),(CLOSE,"!")]
 
 tree = printParseTree input

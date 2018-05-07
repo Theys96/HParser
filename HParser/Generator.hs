@@ -9,45 +9,40 @@ import Debug.Trace
 {-
 
 -}
-printParser :: Grammar -> IO()
-printParser grammar = putStr $ genParser grammar
+printParser :: String -> Grammar -> IO()
+printParser name grammar = putStr $ genParser name grammar
 
-saveParser :: String -> Grammar -> IO()
-saveParser filename grammar = writeFile filename $ genParser grammar
+saveParser :: String -> String -> Grammar -> IO()
+saveParser filename name grammar = writeFile filename $ genParser name grammar
 
-genParser :: Grammar -> String
-genParser grammar 
+genParser :: String -> Grammar -> String
+genParser name grammar 
    | syntaxSanity grammar /= ""                   -- Syntax check
       = errorWithoutStackTrace (syntaxErrorText++"\n"++(syntaxSanity grammar))
    | checkSets grammar /= ""                      -- Conflict check
       = trace ("{-\n"++confictWarningText++"\n"++(checkSets grammar)++"\n-}") parser
-   | otherwise = parser
+   | otherwise = parser++parserCode
    where
       syntaxErrorText     = "Syntactic error(s) in grammar definition."
       confictWarningText  = "*** Warning: Conflict(s) in grammar definition.\n" ++
                             "    Notice that this will cause the parser to throw a warning \n" ++
                             "    when running it and make it choose the first rule."
-      parser = "\nimport HParser.Parser\n\n" ++
-               "data NonTerminal = " ++ (intercalate " | " (nonTerminalNames grammar)) ++ "\n\n" ++
-               "instance Show NonTerminal where\n" ++
-               showRules ++ 
+      parser = "module "++name++" (Token (..), TokenTuple (..), ParseTree (..), parser, parseTree, printParseTree) where\n\n"++
+               "import Data.Tree\nimport Debug.Trace\nimport Control.Arrow\n\n" ++
+               "-- GRAMMAR-SPECIFIC PARSER CODE\n" ++
+               "data Token = " ++ (intercalate " | " (terminalNames grammar)) ++ "\n" ++
+               "   deriving (Read, Show, Eq)\n\n" ++
+               "data NonTerminal = " ++ (intercalate " | " (nonTerminalNames grammar)) ++ "\n" ++
+               "   deriving (Read, Show, Eq)\n\n" ++
                "instance Symbol NonTerminal where" ++
                eofRules ++
                "\n   parseEOF _ = False\n" ++ 
                parseRules ++
                "\n   parseRule _ _ = parseFailure\n\n" ++
-               "parser :: [Char] -> (Bool, [Char], [Char])\n" ++
-               "parser t = (status && (tokens == []), accepted, tokens)\n" ++
-               "   where\n" ++
-               "      (status, tokens, accepted, tree) = parse S (True, t, [], Node \"\" [])\n\n" ++
-               "parseTree :: [Char] -> ParseTree\n" ++
-               "parseTree t\n" ++
-               "   | status && (tokens == []) = tree\n" ++
-               "   | otherwise = trace \"*** Warning! The string was not accepted by the parser.\\n\" tree\n" ++
-               "   where\n" ++
-               "      (status, tokens, accepted, tree) = parse S (True, t, [], Node \"\" [])\n\n"
+               "-- Set starting symbol\n"++
+               "parser = _parser S\n"++
+               "parseTree = _parseTree S\n\n\n\n"
       (parseRules, eofRules) = parserRules grammar
-      showRules = (concat ["   " ++ "show " ++ name ++ " = \"" ++ name ++ "\"\n" | name <- (nonTerminalNames grammar)]) ++ "\n"
 
 parserRules :: Grammar -> (String, String)
 parserRules (Grammar rules) 
@@ -60,7 +55,7 @@ parserRules (Grammar rules)
       
       parseRuleOfToken _ "" = "" 
       parseRuleOfToken (Rule (NonTerminal symbol) rh) token 
-         = "\n   parseRule " ++ symbol ++ " '" ++ token ++ "' = "++(parserActionsOfRule rh)
+         = "\n   parseRule " ++ symbol ++ " " ++ token ++ " = "++(parserActionsOfRule rh)
       parseRuleOfToken _ _ = ""
       parseEOFsOfToken (Rule (NonTerminal symbol) rh) ""
          = "\n   parseEOF " ++ symbol ++ " = True"
@@ -69,7 +64,7 @@ parserRules (Grammar rules)
       parserActionsOfRule [] = "parseEpsilon"
       parserActionsOfRule symbols = (intercalate " >>> " $ map symbolAction $ symbols)
       symbolAction (NonTerminal nt) = "parse " ++ nt
-      symbolAction (Terminal t) = "parseToken '" ++ t ++ "'"
+      symbolAction (Terminal t) = "parseToken " ++ t
 
 
 checkSets :: Grammar -> String
@@ -101,3 +96,64 @@ generatingSet grammar (Rule lh rh)
       where
          thisFirstSet = (S.filter (/= "") $ ruleFirstSet grammar rule) 
          rule = (Rule lh rh)
+
+parserCode = concat (intersperse "\n" ["",
+   "-- STANDARD PARSER CODE",
+   "-- Types",
+   "data Leaf = T Token String | NT NonTerminal",
+   "   deriving (Show)",
+   "type TokenTuple = (Token, String)",
+   "type ParseTree = Tree Leaf",
+   "-- The state contains respectively: ",
+   "-- (whether parsing is still succesful, parsed tokens, tokens still to be parsed, current parse tree)",
+   "type State = (Bool, [TokenTuple], [TokenTuple], ParseTree)",
+   "",
+   "-- Standard code",
+   "class Symbol s where",
+   "   parseEOF :: s -> Bool",
+   "   parseRule :: s -> Token -> (State -> State)",
+   "",
+   "-- Tries to parse the current state with the given non-terminal",
+   "parse :: NonTerminal -> State -> State",
+   "parse s (True, c:tokens, accepted, (Node nt children)) = (newStatus, newTokens, newAccepted, Node nt (children++[subTree]))",
+   "   where",
+   "      (newStatus, newTokens, newAccepted, subTree) = (parseRule s (fst c)) (True, c:tokens, accepted, Node (NT s) [])",
+   "parse s (True, [], accepted, tree) = (parseEOF s, [], accepted, tree) -- If the list of accepted tokens is empty, we must accept EOF",
+   "parse _ state = parseFailure state",
+   "",
+   "-- Tries to parse the current state with the given terminal",
+   "parseToken :: Token -> State -> State",
+   "parseToken x (True, (y,s):t, a, Node nt children)",
+   "             | x == y    = (True, t, a++[(x,s)], Node nt (children++[Node (T y s) []]))",
+   "             | otherwise = (False, (y,s):t, a, Node nt children)",
+   "parseToken _ (False, t, a, tree)   = (False, t, a, tree)  -- If parsing already failed nothing changes",
+   "parseToken _ (True, [], a, tree)   = (False, [], a, tree) -- If we are already done, this token is unexpected",
+   "",
+   "-- Does not nothing, just sets the status to False",
+   "parseFailure :: State -> State",
+   "parseFailure (_, tokens, accepted, tree) = (False, tokens, accepted, tree)",
+   "",
+   "-- Does nothing (accepts epsilon)",
+   "parseEpsilon :: State -> State",
+   "parseEpsilon x = x",
+   "",
+   "-- Functions to be exported",
+   "_parser :: NonTerminal -> [TokenTuple] -> (Bool, [TokenTuple], [TokenTuple])",
+   "_parser s t = (status && (tokens == []), accepted, tokens)",
+   "   where",
+   "      (status, tokens, accepted, (Node x [tree])) = parse s (True, t, [], Node (NT s) [])",
+   "",
+   "_parseTree :: NonTerminal -> [TokenTuple] -> ParseTree",
+   "_parseTree s t",
+   "   | status && (tokens == []) = tree",
+   "   | otherwise = trace \"*** Warning! The string was not accepted by the parser.\" tree",
+   "   where",
+   "      (status, tokens, accepted, (Node x [tree])) = parse s (True, t, [], Node (NT s) [])",
+   "",
+   "printParseTree :: [TokenTuple] -> IO ()",
+   "printParseTree = putStr.drawTree.toStringTree.parseTree",
+   "   where",
+   "      toStringTree :: ParseTree -> Tree String",
+   "      toStringTree (Node (NT s) children) = (Node (show s) (map toStringTree children))",
+   "      toStringTree (Node (T t s) children) = (Node s [])",
+   ""])

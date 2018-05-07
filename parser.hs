@@ -1,11 +1,11 @@
-module NewParser (Token (..), TokenTuple (..), ParseTree (..), parser, parseTree, printParseTree) where
+module Parser (Token (..), TokenTuple (..), ParseTree (..), parser, parseTree, printParseTree) where
 
 import Data.Tree
 import Debug.Trace
 import Control.Arrow
 
 -- GRAMMAR-SPECIFIC PARSER CODE
-data Token = BRKTOPEN | ONE | BRKTCLOSE | PLUS
+data Token = PLUS | ONE | OPEN | CLOSE
    deriving (Read, Show, Eq)
 
 data NonTerminal = S | Sp | E
@@ -15,17 +15,18 @@ instance Symbol NonTerminal where
    parseEOF Sp = True
    parseEOF _ = False
 
-   parseRule S BRKTOPEN = parse E >>> parse Sp
    parseRule S ONE = parse E >>> parse Sp
-   parseRule Sp BRKTCLOSE = parseEpsilon
+   parseRule S OPEN = parse E >>> parse Sp
+   parseRule Sp CLOSE = parseEpsilon
    parseRule Sp PLUS = parseToken PLUS >>> parse S
    parseRule E ONE = parseToken ONE
-   parseRule E BRKTOPEN = parseToken BRKTOPEN >>> parse S >>> parseToken BRKTCLOSE
+   parseRule E OPEN = parseToken OPEN >>> parse S >>> parseToken CLOSE
    parseRule _ _ = parseFailure
 
 -- Set starting symbol
 parser = _parser S
 parseTree = _parseTree S
+
 
 
 
@@ -55,8 +56,8 @@ parse _ state = parseFailure state
 -- Tries to parse the current state with the given terminal
 parseToken :: Token -> State -> State
 parseToken x (True, (y,s):t, a, Node nt children)
-                          | x == y    = (True, t, a++[(x,s)], Node nt (children++[Node (T y s) []]))
-                          | otherwise = (False, (y,s):t, a, Node nt children)
+             | x == y    = (True, t, a++[(x,s)], Node nt (children++[Node (T y s) []]))
+             | otherwise = (False, (y,s):t, a, Node nt children)
 parseToken _ (False, t, a, tree)   = (False, t, a, tree)  -- If parsing already failed nothing changes
 parseToken _ (True, [], a, tree)   = (False, [], a, tree) -- If we are already done, this token is unexpected
 
@@ -77,7 +78,7 @@ _parser s t = (status && (tokens == []), accepted, tokens)
 _parseTree :: NonTerminal -> [TokenTuple] -> ParseTree
 _parseTree s t
    | status && (tokens == []) = tree
-   | otherwise = trace "*** Warning! The string was not accepted by the parser.\n" tree
+   | otherwise = trace "*** Warning! The string was not accepted by the parser." tree
    where
       (status, tokens, accepted, (Node x [tree])) = parse s (True, t, [], Node (NT s) [])
 

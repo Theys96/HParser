@@ -4,7 +4,7 @@ import HParser.Generator
 grammar = Grammar [
    Rule (NonTerminal "S") [(NonTerminal "E"), (NonTerminal "Sp")],
    Rule (NonTerminal "Sp") [],
-   Rule (NonTerminal "Sp") [(Terminal "+"), (NonTerminal "S")],
-   Rule (NonTerminal "E") [(Terminal "1")],
-   Rule (NonTerminal "E") [(Terminal "("), (NonTerminal "S"), (Terminal ")")]
+   Rule (NonTerminal "Sp") [(Terminal "PLUS"), (NonTerminal "S")],
+   Rule (NonTerminal "E") [(Terminal "ONE")],
+   Rule (NonTerminal "E") [(Terminal "OPEN"), (NonTerminal "S"), (Terminal "CLOSE")]
    ]
