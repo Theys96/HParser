@@ -9,6 +9,8 @@ import Test.HUnit
 
 -- NOTE: You must install HUnit on your system to run the tests
 
+main = runTestTT tests
+
 grammar1 = Grammar [
    Rule (NonTerminal "S") [NonTerminal "E", NonTerminal "Sp"],
    Rule (NonTerminal "Sp") [],

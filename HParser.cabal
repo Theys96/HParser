@@ -48,14 +48,13 @@ extra-source-files:  ChangeLog.md, README.md
 -- Constraint on the version of Cabal needed to build this package.
 cabal-version:       >=1.10
 
-
 library
   -- Modules exported by the library.
-  -- exposed-modules: HParser.FirstSet, HParser.FollowSet, HParser.Generator HParser.Grammar, HParser.Parser
+  -- exposed-modules:  HParser.FirstSet, HParser.FollowSet, HParser.Generator, HParser.Grammar, HParser.Parser
   
   -- Modules included in this library but not exported.
-  -- other-modules:       
-  
+  -- other-modules:    
+
   -- LANGUAGE extensions used by modules in this package.
   -- other-extensions:    
   
@@ -63,8 +62,15 @@ library
   build-depends:       base >=4.10 && <4.11
   
   -- Directories containing source files.
-  hs-source-dirs:      HGrammar
+  -- hs-source-dirs:      HParser
   
   -- Base language which the package is written in.
   default-language:    Haskell2010
   
+Test-Suite test-program
+  type:               exitcode-stdio-1.0
+  main-is:            Test.hs
+  build-depends:      base
+                    , HUnit
+                    , containers
+                    , HParser
