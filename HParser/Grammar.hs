@@ -8,7 +8,7 @@ import qualified Data.Set as Set
 
 data Symbol = Terminal String | NonTerminal String | Epsilon
 data Rule = Rule Symbol [Symbol]
-data Grammar = Grammar [Rule]
+data Grammar = Grammar Symbol [Rule]
 
 instance Show Symbol where
    show (NonTerminal c) = c
@@ -20,7 +20,7 @@ instance Show Rule where
    show (Rule start tokens) = (show start) ++ " \t-> " ++ (intercalate " " $ map show $ tokens)
 
 instance Show Grammar where
-   show (Grammar rules) = (intercalate "\n" $ map show $ rules)
+   show (Grammar s rules) = (intercalate "\n" $ map show $ rules)
 
 instance Eq Symbol where
    (==) (NonTerminal a) (NonTerminal b) = a == b
@@ -45,14 +45,23 @@ instance Ord Rule where
       | otherwise = lhs1 `compare` lhs2
 
 nonTerminalNames :: Grammar -> [String]
-nonTerminalNames (Grammar rules) = nub [name | Rule (NonTerminal name) rh <- rules]
+nonTerminalNames (Grammar s rules) = nub [name | Rule (NonTerminal name) rh <- rules]
 
 terminalNames :: Grammar -> [String]
-terminalNames (Grammar rules) = [name | Terminal name <- concat [rh | Rule s rh <- rules]]
+terminalNames (Grammar s rules) = [name | Terminal name <- concat [rh | Rule s rh <- rules]]
+
+startSymbol :: Grammar -> String
+startSymbol (Grammar (NonTerminal start) rules) = start
+startSymbol _ = ""
 
 syntaxSanity :: Grammar -> String
-syntaxSanity (Grammar rules) = seperateLines (map checkRuleSanity rules)
+syntaxSanity (Grammar s rules) = seperateLines ((checkGrammarSanity (Grammar s rules)):(map checkRuleSanity rules))
    where
+      checkGrammarSanity :: Grammar -> String
+      checkGrammarSanity grammar
+                       | startSymbol grammar == "" = "Error: Start symbol must be a non-terminal"
+                       | otherwise = ""
+
       checkRuleSanity :: Rule -> String
       checkRuleSanity (Rule (NonTerminal nt) rhs) = seperateLines $ map checkSymbolSanity rhs
       checkRuleSanity (Rule lhs rhs)              = seperateLines $ (syntaxError (Rule lhs rhs)):(map checkSymbolSanity rhs)

@@ -45,8 +45,8 @@ genParser name grammar
       (parseRules, eofRules) = parserRules grammar
 
 parserRules :: Grammar -> (String, String)
-parserRules (Grammar rules) 
-   = (concat $ map (parseRulesOfRule (Grammar rules)) rules, concat $ map (parseEOFsOfRule (Grammar rules)) rules)
+parserRules (Grammar s rules) 
+   = (concat $ map (parseRulesOfRule (Grammar s rules)) rules, concat $ map (parseEOFsOfRule (Grammar s rules)) rules)
    where
       parseRulesOfRule grammar rule
          = concat $ S.toList $ S.map (parseRuleOfToken rule) (generatingSet grammar rule)
@@ -86,7 +86,7 @@ checkSets grammar
       seperateLines [] = ""
 
 generatingSets :: Grammar -> [(S.Set String, Rule)]
-generatingSets (Grammar rules) = [(generatingSet (Grammar rules) (Rule lhs rhs), (Rule lhs rhs)) | (Rule lhs rhs) <- rules]
+generatingSets (Grammar s rules) = [(generatingSet (Grammar s rules) (Rule lhs rhs), (Rule lhs rhs)) | (Rule lhs rhs) <- rules]
 
 generatingSet :: Grammar -> Rule -> S.Set String
 generatingSet grammar (Rule lh rh)

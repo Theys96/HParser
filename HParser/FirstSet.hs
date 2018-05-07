@@ -11,26 +11,26 @@ ruleFirstSet :: Grammar ->  Rule -> S.Set String          -- Computes the first 
 symbolFirstSet :: Grammar -> Symbol -> S.Set String       -- Computes the first set of a symbol
 nonTerminalFirstSet :: Grammar -> Symbol -> S.Set Symbol  -- Finds all B in A -*> BC
 
-firstSets (Grammar rules) = map (ruleFirstSet (Grammar rules)) rules
+firstSets (Grammar s rules) = map (ruleFirstSet (Grammar s rules)) rules
 
 -- The first-set of A is the union of the first sets of all rules A -> ..
-symbolFirstSet (Grammar rules) (NonTerminal symbol) 
-   = S.unions $ map (ruleFirstSet (Grammar rules)) rulesA
+symbolFirstSet (Grammar s rules) (NonTerminal symbol) 
+   = S.unions $ map (ruleFirstSet (Grammar s rules)) rulesA
       where
          rulesA = [Rule (NonTerminal nt) rhSide | Rule (NonTerminal nt) rhSide <- rules, nt == symbol ] -- All rules A -> ..
 
 -- The first-set of a terminal is itself as a singleton
-symbolFirstSet (Grammar rules) (Terminal symbol)
+symbolFirstSet (Grammar s rules) (Terminal symbol)
    = S.singleton symbol
 -- Same for epsilon
-symbolFirstSet (Grammar rules) Epsilon
+symbolFirstSet (Grammar s rules) Epsilon
    = S.singleton ""
 
 
 nonTerminalFirstSet grammar (NonTerminal nt) 
    = recursionStep grammar $ nonTerminalFirstSetStep grammar (NonTerminal nt)
    where
-      nonTerminalFirstSetStep (Grammar rules) symbol 
+      nonTerminalFirstSetStep (Grammar s rules) symbol 
          = S.fromList [NonTerminal x | Rule (NonTerminal nt) ((NonTerminal x):rhs) <- rules, (NonTerminal nt) == symbol]
       recursionStep grammar set
          | recursionSet `S.isSubsetOf` set   = set

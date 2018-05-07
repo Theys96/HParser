@@ -1,7 +1,7 @@
 import HParser.Grammar
 import HParser.Generator
 
-grammar = Grammar [
+grammar = Grammar (NonTerminal "S") [
    Rule (NonTerminal "S") [(NonTerminal "E"), (NonTerminal "Sp")],
    Rule (NonTerminal "Sp") [],
    Rule (NonTerminal "Sp") [(Terminal "PLUS"), (NonTerminal "S")],
