@@ -1,8 +1,11 @@
 language: haskell
+ghc:
+  - "8.2"
 
 # command to build
 install:
-  - make
+  - make install
+  - make build
   - make clean
 
 # command to run tests

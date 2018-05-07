@@ -1,6 +1,7 @@
 all:
 	make install
 	make build
+	make clean
 
 install:
 	cabal install HUnit
