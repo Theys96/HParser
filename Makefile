@@ -4,7 +4,6 @@ build:
 
 clean:
 	cd HGrammar && make clean
-	rm -f *~
-	rm -f *.hi
-	rm -f *.o
-
+	rm -f *~ && rm -f *.hi && rm -f *.o
+	cd HParser && rm -f *~ && rm -f *.hi && rm -f *.o
+	
