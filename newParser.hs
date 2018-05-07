@@ -13,13 +13,10 @@ import Control.Arrow
 
 -- GRAMMAR-SPECIFIC PARSER CODE
 data Token = BRKTOPEN | ONE | BRKTCLOSE | PLUS
-   deriving (Read, Show, Enum, Eq, Ord)
+   deriving (Read, Show, Eq)
 
 data NonTerminal = S | Sp | E
-   deriving (Read, Show, Enum, Eq, Ord)
-
-data Leaf = T Token String | NT NonTerminal
-   deriving (Show)
+   deriving (Read, Show, Eq)
 
 instance Symbol NonTerminal where
    parseEOF Sp = True
@@ -33,10 +30,16 @@ instance Symbol NonTerminal where
    parseRule E BRKTOPEN = parseToken BRKTOPEN >>> parse S >>> parseToken BRKTCLOSE
    parseRule _ _ = parseFailure
 
+-- Set starting symbol
+parser = _parser S
+parseTree = _parseTree S
+
+
 
 -- STANDARD PARSER CODE
-
 -- Types
+data Leaf = T Token String | NT NonTerminal
+   deriving (Show)
 type TokenTuple = (Token, String)
 type ParseTree = Tree Leaf
 -- The state contains respectively: 
@@ -72,23 +75,22 @@ parseFailure (_, tokens, accepted, tree) = (False, tokens, accepted, tree)
 parseEpsilon :: State -> State
 parseEpsilon x = x
 
-
--- User code
-parser :: [TokenTuple] -> (Bool, [TokenTuple], [TokenTuple])
-parser t = (status && (tokens == []), accepted, tokens)
+-- Functions to be exported
+_parser :: NonTerminal -> [TokenTuple] -> (Bool, [TokenTuple], [TokenTuple])
+_parser s t = (status && (tokens == []), accepted, tokens)
    where
-      (status, tokens, accepted, (Node x [tree])) = parse S (True, t, [], Node (NT S) [])
+      (status, tokens, accepted, (Node x [tree])) = parse s (True, t, [], Node (NT s) [])
 
-parseTree :: [TokenTuple] -> ParseTree
-parseTree t
+_parseTree :: NonTerminal -> [TokenTuple] -> ParseTree
+_parseTree s t
    | status && (tokens == []) = tree
    | otherwise = trace "*** Warning! The string was not accepted by the parser.\n" tree
    where
-      (status, tokens, accepted, (Node x [tree])) = parse S (True, t, [], Node (NT S) [])
-
-toStringTree :: ParseTree -> Tree String
-toStringTree (Node (NT s) children) = (Node (show s) (map toStringTree children))
-toStringTree (Node (T t s) children) = (Node s [])
+      (status, tokens, accepted, (Node x [tree])) = parse s (True, t, [], Node (NT s) [])
 
 printParseTree :: [TokenTuple] -> IO ()
 printParseTree = putStr.drawTree.toStringTree.parseTree
+   where
+      toStringTree :: ParseTree -> Tree String
+      toStringTree (Node (NT s) children) = (Node (show s) (map toStringTree children))
+      toStringTree (Node (T t s) children) = (Node s [])
