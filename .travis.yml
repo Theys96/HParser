@@ -1,8 +1,6 @@
 language: haskell
 ghc:
-  - "8.2.2"
-  - "8.2.1"
-  - "7.10"
+  - "8.2"
 
 # command to build
 install:
