@@ -1,1 +1,12 @@
 language: haskell
+
+# command to build
+install:
+  - make
+  - make clean
+
+# command to run tests
+script:
+  - ./test
+  - HGrammar/HGrammar grammar1
+  - HGrammar/HGrammar grammar3
