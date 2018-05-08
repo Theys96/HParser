@@ -1,0 +1,45 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>HParser.Generator</title><link href="ocean.css" rel="stylesheet" type="text/css" title="Ocean" /><script src="haddock-util.js" type="text/javascript"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script><script type="text/javascript">//<![CDATA[
+window.onload = function () {pageLoad();};
+//]]>
+</script></head><body><div id="package-header"><ul class="links" id="page-menu"><li><a href="index.html">Contents</a></li><li><a href="doc-index.html">Index</a></li></ul><p class="caption empty">&nbsp;</p></div><div id="content"><div id="module-header"><table class="info"><tr><th>Safe Haskell</th><td>None</td></tr></table><p class="caption">HParser.Generator</p></div><div id="description"><p class="caption">Description</p><div class="doc"><p>Set of functions to generate LL(1) parsers from a <code><a href="HParser-Grammar.html#t:Grammar">Grammar</a></code>.</p></div></div><div id="synopsis"><p id="control.syn" class="caption expander" onclick="toggleSection('syn')">Synopsis</p><ul id="section.syn" class="hide" onclick="toggleSection('syn')"><li class="src short"><a href="#v:genParser">genParser</a> :: <a href="HParser-Grammar.html#t:Grammar">Grammar</a> -&gt; String -&gt; String</li><li class="src short"><a href="#v:printParser">printParser</a> :: <a href="HParser-Grammar.html#t:Grammar">Grammar</a> -&gt; String -&gt; IO ()</li><li class="src short"><a href="#v:saveParser">saveParser</a> :: <a href="HParser-Grammar.html#t:Grammar">Grammar</a> -&gt; String -&gt; IO ()</li><li class="src short"><a href="#v:checkSets">checkSets</a> :: <a href="HParser-Grammar.html#t:Grammar">Grammar</a> -&gt; String</li></ul></div><div id="interface"><h1>Documentation</h1><div class="top"><p class="src"><a id="v:genParser" class="def">genParser</a> :: <a href="HParser-Grammar.html#t:Grammar">Grammar</a> -&gt; String -&gt; String <a href="#v:genParser" class="selflink">#</a></p><div class="doc"><p>Creates a Haskell LL(1)-parser from given <code><a href="HParser-Grammar.html#t:Grammar">Grammar</a></code>, with a given name.
+It will give warnings or errors if the grammar is not well-defined or not LL(1).</p><p>Example:</p><pre>&gt;&gt;&gt; grammar
+S 	-&gt; E Sp
+Sp 	-&gt; &#949;
+Sp 	-&gt; <code>PLUS</code> S
+E 	-&gt; <code>ONE</code>
+E 	-&gt; <code>OPEN</code> S <code>CLOSE</code>
+&gt;&gt;&gt; putStr $ genParser &quot;Parser&quot; grammar
+module Parser (Token (..), TokenTuple (..), ParseTree (..), parser, parseTree, printParseTree) where
+
+import Data.Tree
+import Debug.Trace
+import Control.Arrow
+
+-- GRAMMAR-SPECIFIC PARSER CODE
+data Token = PLUS | ONE | OPEN | CLOSE
+   deriving (Read, Show, Eq)
+
+data NonTerminal = S | Sp | E
+   deriving (Read, Show, Eq)
+
+instance Symbol NonTerminal where
+   parseEOF Sp = True
+   parseEOF _ = False
+
+   parseRule S ONE = parse E &gt;&gt;&gt; parse Sp
+   parseRule S OPEN = parse E &gt;&gt;&gt; parse Sp
+   parseRule Sp CLOSE = parseEpsilon
+   parseRule Sp PLUS = parseToken PLUS &gt;&gt;&gt; parse S
+   parseRule E ONE = parseToken ONE
+   parseRule E OPEN = parseToken OPEN &gt;&gt;&gt; parse S &gt;&gt;&gt; parseToken CLOSE
+   parseRule _ _ = parseFailure
+
+-- Set starting symbol
+parser = _parser S
+parseTree = _parseTree S
+
+
+(omitting standard parser code)
+</pre></div></div><div class="top"><p class="src"><a id="v:printParser" class="def">printParser</a> :: <a href="HParser-Grammar.html#t:Grammar">Grammar</a> -&gt; String -&gt; IO () <a href="#v:printParser" class="selflink">#</a></p><div class="doc"><p>Uses the <code><a href="HParser-Generator.html#v:genParser">genParser</a></code> function to print a parser to IO.</p></div></div><div class="top"><p class="src"><a id="v:saveParser" class="def">saveParser</a> :: <a href="HParser-Grammar.html#t:Grammar">Grammar</a> -&gt; String -&gt; IO () <a href="#v:saveParser" class="selflink">#</a></p><div class="doc"><p>Uses the <code><a href="HParser-Generator.html#v:genParser">genParser</a></code> function to save a parser to a file. 
+The name that is needed for generating the parser, is also used as the filename.</p></div></div><div class="top"><p class="src"><a id="v:checkSets" class="def">checkSets</a> :: <a href="HParser-Grammar.html#t:Grammar">Grammar</a> -&gt; String <a href="#v:checkSets" class="selflink">#</a></p><div class="doc"><p>Function to check for conflicting rules. </p><p>Returns conflicts written in a string.
+If a grammar is LL(1), this will return empty string (&quot;&quot;).</p></div></div></div></div><div id="footer"><p>Produced by <a href="http://www.haskell.org/haddock/">Haddock</a> version 2.18.1</p></div></body></html>

@@ -1,3 +1,6 @@
+{-|
+Set of functions to compute follow sets in a 'HParser.Grammar.Grammar'.
+-}
 module HParser.FollowSet (
    followSet
    ) where
@@ -11,7 +14,19 @@ import qualified Data.Set as S
 -- if A -> aBC and C = ε or ε in First{C} then Follow{A} in Follow{C}   | followSetSubsets
 -- if A -> aBC then First{C}\{ε} in Follow{B}                           | directFollowSets
 
--- Computes the follow set of a given non-terminal in a grammar
+{-|
+Computes the follow set of a given non-terminal in a grammar.
+If the resulting set contains the empty string (""), $, or end-of-string, is in the set.
+
+>>> grammar
+S 	-> E Sp
+Sp 	-> ε
+Sp 	-> 'PLUS' S
+E 	-> 'ONE'
+E 	-> 'OPEN' S 'CLOSE'
+>>> followSet grammar (NonTerminal "E")
+fromList ["","CLOSE","PLUS"]
+-}
 followSet :: Grammar -> Symbol -> S.Set (String)
 followSet grammar nonTerminal = 
    S.union

@@ -1,0 +1,1 @@
+haddock HParser.Generator --html --odir=docs
