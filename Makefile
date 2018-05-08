@@ -1,6 +1,7 @@
 all:
 	make install
 	make build
+	make test
 	make clean
 
 install:
@@ -8,6 +9,8 @@ install:
 
 build: 
 	cd HGrammar && make
+
+test:
 	ghc Test.hs -o test
 
 clean:
