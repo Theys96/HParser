@@ -10,6 +10,8 @@ install:
 
 # command to run tests
 script:
+  - HGrammar/HGrammar grammar1 grammar1 S
+  - HGrammar/HGrammar grammar2 grammar2 S
+  - HGrammar/HGrammar grammar3 grammar3 S
+  - HGrammar/HGrammar grammar5 grammar5 S
   - ./test
-  - HGrammar/HGrammar grammar1
-  - HGrammar/HGrammar grammar3

@@ -8,38 +8,17 @@ import Data.List
 import Test.HUnit
 
 import Grammar1
+import Grammar2
+import Grammar3
+import Grammar5
 
 -- NOTE: You must install HUnit on your system to run the tests
 
 main = runTestTT tests
 
-grammar2 = Grammar (NonTerminal "S") [
-   Rule (NonTerminal "S") [NonTerminal "A", Terminal "a", NonTerminal "A", Terminal "b"],
-   Rule (NonTerminal "S") [NonTerminal "B", Terminal "b", NonTerminal "B", Terminal "a"],
-   Rule (NonTerminal "A") [],
-   Rule (NonTerminal "B") []
-   ]
-
-grammar3 = Grammar (NonTerminal "S") [
-   Rule (NonTerminal "S") [NonTerminal "T", NonTerminal "A"],
-   Rule (NonTerminal "A") [Terminal "+", NonTerminal "T", NonTerminal "A"],
-   Rule (NonTerminal "A") [],
-   Rule (NonTerminal "T") [NonTerminal "F", NonTerminal "B"],
-   Rule (NonTerminal "B") [Terminal "*", NonTerminal "F", NonTerminal "B"],
-   Rule (NonTerminal "B") [],
-   Rule (NonTerminal "F") [Terminal "(", NonTerminal "S", Terminal ")"],
-   Rule (NonTerminal "F") [Terminal "x"]
-   ]
-
+-- This is a corrupt grammar
 grammar4 = Grammar (NonTerminal "S") [
    Rule (Terminal "a") [Terminal "aa"]
-   ]
-
-grammar5 = Grammar (NonTerminal "S") [
-   Rule (NonTerminal "S") [NonTerminal "E"],
-   Rule (NonTerminal "S") [Terminal "a"],
-   Rule (NonTerminal "E") [Terminal "a"],
-   Rule (NonTerminal "E") []
    ]
 
 -- The first and follow set tests are done with http://mdaines.github.io/grammophone/

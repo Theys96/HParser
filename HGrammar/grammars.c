@@ -114,8 +114,8 @@ char* readRule(char* nt0) {
 }
 
 int main(int argc, char** argv) {
-   if (argc < 3) {
-      printf("\n\tUsage: %s grammarfile name\n\n", argv[0]);
+   if (argc < 4) {
+      printf("\n\tUsage: %s grammarfile name startingSymbol\n\n", argv[0]);
       exit(-1);
    }
    
@@ -142,7 +142,7 @@ int main(int argc, char** argv) {
    }
 
    fprintf(out, "module %s (%s) where\n\n", moduleName, grammarName);
-   fprintf(out, "import HParser.Grammar\n\n%s = Grammar [\n", grammarName);
+   fprintf(out, "import HParser.Grammar\n\n%s = Grammar (NonTerminal \"%s\") [\n", grammarName, argv[3]);
 
    char* nt = readRule(NULL);
    while (nextChar() != -1) {
