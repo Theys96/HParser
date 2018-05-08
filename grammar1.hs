@@ -1,13 +1,11 @@
-import HParser.Grammar
-import HParser.Generator
+module Grammar1 (grammar1) where
 
-grammar = Grammar (NonTerminal "S") [
+import HParser.Grammar
+
+grammar1 = Grammar [
    Rule (NonTerminal "S") [(NonTerminal "E"), (NonTerminal "Sp")],
    Rule (NonTerminal "Sp") [],
-   Rule (NonTerminal "Sp") [(Terminal "PLUS"), (NonTerminal "S")],
-   Rule (NonTerminal "E") [(Terminal "ONE")],
-   Rule (NonTerminal "E") [(Terminal "OPEN"), (NonTerminal "S"), (Terminal "CLOSE")]
+   Rule (NonTerminal "Sp") [(Terminal "+"), (NonTerminal "S")],
+   Rule (NonTerminal "E") [(Terminal "1")],
+   Rule (NonTerminal "E") [(Terminal "("), (NonTerminal "S"), (Terminal ")")]
    ]
-
-
-

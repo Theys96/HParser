@@ -7,17 +7,11 @@ import qualified Data.Set as S
 import Data.List
 import Test.HUnit
 
+import Grammar1
+
 -- NOTE: You must install HUnit on your system to run the tests
 
 main = runTestTT tests
-
-grammar1 = Grammar (NonTerminal "S") [
-   Rule (NonTerminal "S") [NonTerminal "E", NonTerminal "Sp"],
-   Rule (NonTerminal "Sp") [],
-   Rule (NonTerminal "Sp") [Terminal "+", NonTerminal "S"],
-   Rule (NonTerminal "E") [Terminal "1"],
-   Rule (NonTerminal "E") [Terminal "(", NonTerminal "S", Terminal ")"]
-   ]
 
 grammar2 = Grammar (NonTerminal "S") [
    Rule (NonTerminal "S") [NonTerminal "A", Terminal "a", NonTerminal "A", Terminal "b"],
