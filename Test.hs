@@ -11,7 +11,7 @@ import Test.HUnit
 
 main = runTestTT tests
 
-grammar1 = Grammar [
+grammar1 = Grammar (NonTerminal "S") [
    Rule (NonTerminal "S") [NonTerminal "E", NonTerminal "Sp"],
    Rule (NonTerminal "Sp") [],
    Rule (NonTerminal "Sp") [Terminal "+", NonTerminal "S"],
@@ -19,14 +19,14 @@ grammar1 = Grammar [
    Rule (NonTerminal "E") [Terminal "(", NonTerminal "S", Terminal ")"]
    ]
 
-grammar2 = Grammar [
+grammar2 = Grammar (NonTerminal "S") [
    Rule (NonTerminal "S") [NonTerminal "A", Terminal "a", NonTerminal "A", Terminal "b"],
    Rule (NonTerminal "S") [NonTerminal "B", Terminal "b", NonTerminal "B", Terminal "a"],
    Rule (NonTerminal "A") [],
    Rule (NonTerminal "B") []
    ]
 
-grammar3 = Grammar [
+grammar3 = Grammar (NonTerminal "S") [
    Rule (NonTerminal "S") [NonTerminal "T", NonTerminal "A"],
    Rule (NonTerminal "A") [Terminal "+", NonTerminal "T", NonTerminal "A"],
    Rule (NonTerminal "A") [],
@@ -37,11 +37,11 @@ grammar3 = Grammar [
    Rule (NonTerminal "F") [Terminal "x"]
    ]
 
-grammar4 = Grammar [
+grammar4 = Grammar (NonTerminal "S") [
    Rule (Terminal "a") [Terminal "aa"]
    ]
 
-grammar5 = Grammar [
+grammar5 = Grammar (NonTerminal "S") [
    Rule (NonTerminal "S") [NonTerminal "E"],
    Rule (NonTerminal "S") [Terminal "a"],
    Rule (NonTerminal "E") [Terminal "a"],
@@ -168,17 +168,17 @@ followSetF3 = TestCase (
 
 generateGrammar1 = TestCase (
    assertBool "Generating a parser from grammar 1" $
-   (genParser grammar1 /= "")
+   (genParser grammar1 "Grammar1Parser" /= "")
    )
 
 generateGrammar2 = TestCase (
    assertBool "Generating a parser from grammar 2" $
-   (genParser grammar2 /= "")
+   (genParser grammar2 "Grammar2Parser" /= "")
    )
 
 generateGrammar3 = TestCase (
    assertBool "Generating a parser from grammar 3" $
-   (genParser grammar3 /= "")
+   (genParser grammar3 "Grammar3Parser" /= "")
    )
 
 tests = TestList [
