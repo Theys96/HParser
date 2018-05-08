@@ -44,21 +44,21 @@ grammar1 = Grammar (NonTerminal "S") [
 
 ## 4. Generate a parser from it
 ```
-$ ghci grammar
+$ ghci grammar1
 GHCi, version 8.2.1: http://www.haskell.org/ghc/  :? for help
 [1 of 5] Compiling HParser.Grammar  ( HParser/Grammar.hs, interpreted )
 [2 of 5] Compiling HParser.FirstSet ( HParser/FirstSet.hs, interpreted )
 [3 of 5] Compiling HParser.FollowSet ( HParser/FollowSet.hs, interpreted )
 [4 of 5] Compiling HParser.Generator ( HParser/Generator.hs, interpreted )
-[5 of 5] Compiling Grammar          ( grammar.hs, interpreted )
+[5 of 5] Compiling Grammar1         ( grammar1.hs, interpreted )
 Ok, 5 modules loaded.
-*Grammar> grammar
-S   -> E Sp
-Sp  -> ε
-Sp  -> '+' S
-E   -> '1'
-E   -> '(' S ')'
-*Grammar> putStr $ genParser grammar "Parser"
+*Grammar1> grammar1
+S  -> E Sp
+Sp    -> ε
+Sp    -> '+' S
+E  -> '1'
+E  -> '(' S ')'
+*Grammar1> putStr $ genParser grammar1 "Parser"
 module Parser (Token (..), TokenTuple (..), ParseTree (..), parser, parseTree, printParseTree) where
 
 import Data.Tree
@@ -93,4 +93,4 @@ parseTree = _parseTree S
 ```
 
 ## Disclaimer
-This piece of software is in an extremely early stage of development and should not be used in real-life yet.
+This piece of software is in an extremely early stage of development and should not be used yet.

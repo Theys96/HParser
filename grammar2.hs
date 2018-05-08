@@ -1,6 +1,7 @@
 module Grammar2 (grammar2) where
 
 import HParser.Grammar
+import HParser.Generator
 
 grammar2 = Grammar (NonTerminal "S") [
    Rule (NonTerminal "S") [(NonTerminal "A"), (Terminal "a"), (NonTerminal "A"), (Terminal "b")],
