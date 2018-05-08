@@ -1,4 +1,7 @@
-module HParser.Generator (printParser, saveParser, genParser, checkSets, generatingSets) where
+{-|
+Set of functions to generate LL(1) parsers from a 'HParser.Grammar.Grammar'.
+-}
+module HParser.Generator (genParser, printParser, saveParser, checkSets) where
 
 import qualified Data.Set as S
 import HParser.FirstSet
@@ -6,17 +9,69 @@ import HParser.FollowSet
 import HParser.Grammar
 import Data.List
 import Debug.Trace
-{-
 
+{-|
+Uses the 'genParser' function to print a parser to IO.
 -}
-printParser :: String -> Grammar -> IO()
-printParser name grammar = putStr $ genParser name grammar
+printParser :: Grammar -> String -> IO()
+printParser grammar name = putStr $ genParser grammar name
 
-saveParser :: String -> String -> Grammar -> IO()
-saveParser filename name grammar = writeFile filename $ genParser name grammar
+{-|
+Uses the 'genParser' function to save a parser to a file. 
+The name that is needed for generating the parser, is also used as the filename.
+-}
+saveParser :: Grammar -> String -> IO()
+saveParser grammar name = writeFile (name++".hs") $ genParser grammar name
 
-genParser :: String -> Grammar -> String
-genParser name grammar 
+{-|
+Creates a Haskell LL(1)-parser from given 'HParser.Grammar.Grammar', with a given name.
+It will give warnings or errors if the grammar is not well-defined or not LL(1).
+
+Example:
+
+@
+>>> grammar
+S 	-> E Sp
+Sp 	-> ε
+Sp 	-> 'PLUS' S
+E 	-> 'ONE'
+E 	-> 'OPEN' S 'CLOSE'
+>>> putStr $ genParser \"Parser\" grammar
+module Parser (Token (..), TokenTuple (..), ParseTree (..), parser, parseTree, printParseTree) where
+
+import Data.Tree
+import Debug.Trace
+import Control.Arrow
+
+-- GRAMMAR-SPECIFIC PARSER CODE
+data Token = PLUS | ONE | OPEN | CLOSE
+   deriving (Read, Show, Eq)
+
+data NonTerminal = S | Sp | E
+   deriving (Read, Show, Eq)
+
+instance Symbol NonTerminal where
+   parseEOF Sp = True
+   parseEOF _ = False
+
+   parseRule S ONE = parse E >>> parse Sp
+   parseRule S OPEN = parse E >>> parse Sp
+   parseRule Sp CLOSE = parseEpsilon
+   parseRule Sp PLUS = parseToken PLUS >>> parse S
+   parseRule E ONE = parseToken ONE
+   parseRule E OPEN = parseToken OPEN >>> parse S >>> parseToken CLOSE
+   parseRule _ _ = parseFailure
+
+-- Set starting symbol
+parser = _parser S
+parseTree = _parseTree S
+
+
+(omitting standard parser code)
+@
+-}
+genParser :: Grammar -> String -> String
+genParser grammar name 
    | syntaxSanity grammar /= ""                   -- Syntax check
       = errorWithoutStackTrace (syntaxErrorText++"\n"++(syntaxSanity grammar))
    | checkSets grammar /= ""                      -- Conflict check
@@ -67,6 +122,12 @@ parserRules (Grammar s rules)
       symbolAction (Terminal t) = "parseToken " ++ t
 
 
+{-|
+Function to check for conflicting rules. 
+
+Returns conflicts written in a string.
+If a grammar is LL(1), this will return empty string ("").
+-}
 checkSets :: Grammar -> String
 checkSets grammar 
    = seperateLines 
