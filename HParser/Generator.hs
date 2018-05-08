@@ -36,7 +36,7 @@ Sp 	-> ε
 Sp 	-> 'PLUS' S
 E 	-> 'ONE'
 E 	-> 'OPEN' S 'CLOSE'
->>> putStr $ genParser \"Parser\" grammar
+>>> putStr $ genParser grammar \"Parser\"
 module Parser (Token (..), TokenTuple (..), ParseTree (..), parser, parseTree, printParseTree) where
 
 import Data.Tree

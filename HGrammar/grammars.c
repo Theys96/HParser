@@ -142,7 +142,7 @@ int main(int argc, char** argv) {
    }
 
    fprintf(out, "module %s (%s) where\n\n", moduleName, grammarName);
-   fprintf(out, "import HParser.Grammar\n\n%s = Grammar (NonTerminal \"%s\") [\n", grammarName, argv[3]);
+   fprintf(out, "import HParser.Grammar\nimport HParser.Generator\n\n%s = Grammar (NonTerminal \"%s\") [\n", grammarName, argv[3]);
 
    char* nt = readRule(NULL);
    while (nextChar() != -1) {
