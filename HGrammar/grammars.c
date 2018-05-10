@@ -118,10 +118,6 @@ int main(int argc, char** argv) {
       printf("\n\tUsage: %s grammarfile name startingSymbol\n\n", argv[0]);
       exit(-1);
    }
-   
-   char* outFile = calloc(strlen(argv[2])+4,1);
-   sprintf(outFile, "%s.hs", argv[2]);
-   out = fopen(outFile, "wb");
 
    char* moduleName = malloc((strlen(argv[2])+1)*sizeof(char));
    char* grammarName = malloc((strlen(argv[2])+1)*sizeof(char));
@@ -133,6 +129,10 @@ int main(int argc, char** argv) {
    if (grammarName[0] <= 'Z') {
       grammarName[0] += 'a'-'A';
    }
+
+   outFile = calloc(strlen(moduleName)+4,1);
+   sprintf(outFile, "%s.hs", moduleName);
+   out = fopen(outFile, "wb");
 
    inFile = argv[1];
    in = fopen(inFile, "r");
