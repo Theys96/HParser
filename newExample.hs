@@ -1,4 +1,4 @@
-import Parser
+import NewParser
 
 input = [(OPEN,"!"),(OPEN,"("),(ONE,"1"),(CLOSE,")"),(CLOSE,"!")]
 

@@ -5,7 +5,7 @@ import Debug.Trace
 import Control.Arrow
 
 -- GRAMMAR-SPECIFIC PARSER CODE
-data Token = BRKTOPEN | ONE | BRKTCLOSE | PLUS
+data Token = OPEN | ONE | CLOSE | PLUS
    deriving (Read, Show, Eq)
 
 data NonTerminal = S | Sp | E
@@ -15,12 +15,12 @@ instance Symbol NonTerminal where
    parseEOF Sp = True
    parseEOF _ = False
 
-   parseRule S BRKTOPEN = parse E >>> parse Sp
+   parseRule S OPEN = parse E >>> parse Sp
    parseRule S ONE = parse E >>> parse Sp
-   parseRule Sp BRKTCLOSE = parseEpsilon
+   parseRule Sp CLOSE = parseEpsilon
    parseRule Sp PLUS = parseToken PLUS >>> parse S
    parseRule E ONE = parseToken ONE
-   parseRule E BRKTOPEN = parseToken BRKTOPEN >>> parse S >>> parseToken BRKTCLOSE
+   parseRule E OPEN = parseToken OPEN >>> parse S >>> parseToken CLOSE
    parseRule _ _ = parseFailure
 
 -- Set starting symbol
