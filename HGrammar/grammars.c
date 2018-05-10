@@ -114,10 +114,25 @@ char* readRule(char* nt0) {
 }
 
 int main(int argc, char** argv) {
-   if (argc < 2) {
-      printf("\n\tUsage: %s grammarfile\n\n", argv[0]);
+   if (argc < 4) {
+      printf("\n\tUsage: %s grammarfile name startingSymbol\n\n", argv[0]);
       exit(-1);
    }
+
+   char* moduleName = malloc((strlen(argv[2])+1)*sizeof(char));
+   char* grammarName = malloc((strlen(argv[2])+1)*sizeof(char));
+   strcpy(moduleName, argv[2]);
+   strcpy(grammarName, argv[2]);
+   if (moduleName[0] >= 'a') {
+      moduleName[0] -= 'a'-'A';
+   }
+   if (grammarName[0] <= 'Z') {
+      grammarName[0] += 'a'-'A';
+   }
+
+   outFile = calloc(strlen(moduleName)+4,1);
+   sprintf(outFile, "%s.hs", moduleName);
+   out = fopen(outFile, "wb");
 
    inFile = argv[1];
    in = fopen(inFile, "r");
@@ -126,11 +141,8 @@ int main(int argc, char** argv) {
       exit(-1);
    }
 
-   outFile = calloc(strlen(argv[1])+4,1);
-   sprintf(outFile, "%s.hs", argv[1]);
-   out = fopen(outFile, "wb");
-
-   fprintf(out, "import HParser.Grammar\nimport HParser.Generator\n\ngrammar = Grammar [\n");
+   fprintf(out, "module %s (%s) where\n\n", moduleName, grammarName);
+   fprintf(out, "import HParser.Grammar\nimport HParser.Generator\n\n%s = Grammar (NonTerminal \"%s\") [\n", grammarName, argv[3]);
 
    char* nt = readRule(NULL);
    while (nextChar() != -1) {

@@ -8,7 +8,7 @@ Sp 	-&gt; &#949;
 Sp 	-&gt; <code>PLUS</code> S
 E 	-&gt; <code>ONE</code>
 E 	-&gt; <code>OPEN</code> S <code>CLOSE</code>
-&gt;&gt;&gt; putStr $ genParser &quot;Parser&quot; grammar
+&gt;&gt;&gt; putStr $ genParser grammar &quot;Parser&quot;
 module Parser (Token (..), TokenTuple (..), ParseTree (..), parser, parseTree, printParseTree) where
 
 import Data.Tree
