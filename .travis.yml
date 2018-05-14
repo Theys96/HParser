@@ -11,6 +11,7 @@ install:
   - HGrammar/HGrammar grammar2 grammar2
   - HGrammar/HGrammar grammar3 grammar3
   - HGrammar/HGrammar grammar5 grammar5
+  - ls
   - make test
 
 # command to run tests
