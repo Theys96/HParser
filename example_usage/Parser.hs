@@ -1,11 +1,11 @@
-module Grammar1Parser (Token (..), TokenTuple (..), ParseTree (..), parser, parseTree, printParseTree) where
+module Parser (Token (..), TokenTuple (..), Leaf (..), ParseTree (..), parser, parseTree, printParseTree) where
 
 import Data.Tree
 import Debug.Trace
 import Control.Arrow
 
 -- GRAMMAR-SPECIFIC PARSER CODE
-data Token = PLUS | ONE | OPEN | CLOSE
+data Token = PLUS | NUM | OPEN | CLOSE
    deriving (Read, Show, Eq)
 
 data NonTerminal = S | Sp | E
@@ -15,11 +15,11 @@ instance Symbol NonTerminal where
    parseEOF Sp = True
    parseEOF _ = False
 
-   parseRule S ONE = parse E >>> parse Sp
+   parseRule S NUM = parse E >>> parse Sp
    parseRule S OPEN = parse E >>> parse Sp
    parseRule Sp CLOSE = parseEpsilon
    parseRule Sp PLUS = parseToken PLUS >>> parse S
-   parseRule E ONE = parseToken ONE
+   parseRule E NUM = parseToken NUM
    parseRule E OPEN = parseToken OPEN >>> parse S >>> parseToken CLOSE
    parseRule _ _ = parseFailure
 

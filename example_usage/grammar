@@ -1,0 +1,14 @@
+%start Expression
+%token NUM PLUS OPEN CLOSE
+
+%%
+
+S : E Sp ;
+
+Sp : //epsilon
+   | PLUS S
+   ;
+
+E : NUM
+  | OPEN S CLOSE
+  ;
