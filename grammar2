@@ -1,6 +1,11 @@
-S : A 'a' A 'b'
-  | B 'b' B 'a'
+%tokens a b
+%start S
+
+%%
+
+S : A a A b
+  | B b B a
   ;
 
-A : ;
-B : ;
+A : /* epsilon */ ;
+B : /* epsilon */ ;
