@@ -25,7 +25,7 @@ saveParser grammar name = writeFile (name++".hs") $ genParser grammar name
 
 {-|
 Creates a Haskell LL(1)-parser from given 'HParser.Grammar.Grammar', with a given name.
-It will give warnings or errors if the grammar is not well-defined or not LL(1).
+It will give warnings or errors if the grammar is not properly defined or not LL(1).
 
 Example:
 

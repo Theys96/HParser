@@ -17,7 +17,7 @@ Symbol is an instance is Show:
 
 >>> Terminal "TOKEN"
 'TOKEN'
->>> NonTerminal S
+>>> NonTerminal "S"
 S
 >>> Epsilon
 ε
