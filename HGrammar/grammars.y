@@ -28,6 +28,7 @@ TokenType wordType(char* word);
 void initParser(char* inputName);
 void finalizeParser();
 
+void doDirectiveCheck();
 void writeGrammarStart();
 void writeRules(char* lhs, StringListList lhss);
 void writeGrammarEnd();
@@ -51,7 +52,7 @@ int noRules = 1;
 
 %%
 
-Grammar : Directives T_SEPERATOR { writeGrammarStart(); } RuleList { writeGrammarEnd(); }
+Grammar : Directives { doDirectiveCheck(); } T_SEPERATOR { writeGrammarStart(); } RuleList { writeGrammarEnd(); }
         ;
 
 Directives : TokenDirective StartDirective
@@ -131,6 +132,16 @@ void writeRules(char* lhs, StringListList rhs) {
 
 void writeGrammarEnd() {
   fprintf(out, "\n   ]\n");
+}
+
+void doDirectiveCheck() {
+  if (wordType(startSymbol) == Terminal) {
+    printf("*****\n");
+    printf("Warning! The start symbol is also defined as a token!\n");
+    printf("This means that the start symbol can never be a non-terminal.\n");
+    printf("This grammar will raise issues. Please address this problem.\n");
+    printf("*****\n");
+  }
 }
 
 void initParser(char* inputName) {
