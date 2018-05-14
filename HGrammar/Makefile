@@ -1,7 +1,7 @@
 CC=gcc
-CFLAGS=-O2 -std=c99 -Wall -ll -lm
+CFLAGS=-O2 -std=c99 -Wall -lm
 all: scanner parser
-	${CC} ${CFLAGS} grammars.tab.c stringList.c -o HGrammar
+	${CC} ${CFLAGS} grammars.tab.c stringList.c  -ll -o HGrammar
 
 scanner: grammars.lex
 	flex -i grammars.lex
