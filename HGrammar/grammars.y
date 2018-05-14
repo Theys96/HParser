@@ -32,6 +32,8 @@ void writeGrammarStart();
 void writeRules(char* lhs, StringListList lhss);
 void writeGrammarEnd();
 
+int noRules = 1;
+
 %}
 
 %token T_WORD T_DIR_TOKEN T_DIR_START T_SEMICOLON T_PIPE T_COLON T_SEPERATOR
@@ -105,6 +107,9 @@ void writeRules(char* lhs, StringListList rhs) {
   char* token;
   int s;
   for (int i = 0; i < rhs.size; i++) {
+    if (!noRules) {
+      fprintf(out, ",\n");
+    }
     fprintf(out, "\tRule (NonTerminal \"%s\") [", lhs);
     s = 0;
     while (rhs.list[i][s] != NULL) {
@@ -119,12 +124,13 @@ void writeRules(char* lhs, StringListList rhs) {
       }
       s++;
     }
-    fprintf(out, "]\n");
+    fprintf(out, "]");
+    noRules = 0;
   }
 }
 
 void writeGrammarEnd() {
-  fprintf(out, "]\n");
+  fprintf(out, "\n]\n");
 }
 
 void initParser(char* inputName) {
