@@ -1,9 +1,14 @@
+%tokens PLUS OPEN CLOSE ONE
+%start S
+
+%%
+
 S : E Sp;
 
-Sp :
-   | '+' S
+Sp : /* epsilon */
+   | PLUS S
    ;
 
-E : '1'
-  | '(' S ')'
+E : ONE
+  | OPEN S CLOSE
   ;

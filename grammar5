@@ -1,7 +1,12 @@
+%token a
+%start S
+
+%%
+
 S : E 
-  | 'a'
+  | a
   ;
 
-E : 'a'
+E : a
   | 
   ;

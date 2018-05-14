@@ -7,10 +7,11 @@ install:
   - make install
   - make build
   - make clean
-  - HGrammar/HGrammar grammar1 grammar1 S
-  - HGrammar/HGrammar grammar2 grammar2 S
-  - HGrammar/HGrammar grammar3 grammar3 S
-  - HGrammar/HGrammar grammar5 grammar5 S
+  - HGrammar/HGrammar grammar1 grammar1
+  - HGrammar/HGrammar grammar2 grammar2
+  - HGrammar/HGrammar grammar3 grammar3
+  - HGrammar/HGrammar grammar5 grammar5
+  - ls
   - make test
 
 # command to run tests

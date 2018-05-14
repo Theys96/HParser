@@ -10,32 +10,28 @@ import Test.HUnit
 import Grammar1
 import Grammar2
 import Grammar3
+import Grammar4
 import Grammar5
 
 -- NOTE: You must install HUnit on your system to run the tests
 
 main = runTestTT tests
 
--- This is a corrupt grammar
-grammar4 = Grammar (NonTerminal "S") [
-   Rule (Terminal "a") [Terminal "aa"]
-   ]
-
 -- The first and follow set tests are done with http://mdaines.github.io/grammophone/
 
 firstSetS1 = TestCase (
    assertEqual "First set of S in grammar 1"
-      (sort ["1", "("])
+      (sort ["ONE", "OPEN"])
       (S.toList $ symbolFirstSet grammar1 (NonTerminal "S"))
    )
 firstSetSp1 = TestCase (
    assertEqual "First set of Sp in grammar 1"
-      (sort ["+",""])
+      (sort ["PLUS",""])
       (S.toList $ symbolFirstSet grammar1 (NonTerminal "Sp"))
    )
 firstSetE1 = TestCase (
    assertEqual "First set of E in grammar 1"
-      (sort ["1","("])
+      (sort ["ONE","OPEN"])
       (S.toList $ symbolFirstSet grammar1 (NonTerminal "E"))
    )
 
@@ -57,43 +53,43 @@ firstSetB2 = TestCase (
 
 firstSetS3 = TestCase (
    assertEqual "First set of S in grammar 3"
-      (sort ["(", "x"])
+      (sort ["OPEN", "x"])
       (S.toList $ symbolFirstSet grammar3 (NonTerminal "S"))
    )
 firstSetA3 = TestCase (
    assertEqual "First set of A in grammar 3"
-      (sort ["","+"])
+      (sort ["","PLUS"])
       (S.toList $ symbolFirstSet grammar3 (NonTerminal "A"))
    )
 firstSetT3 = TestCase (
    assertEqual "First set of T in grammar 3"
-      (sort ["(","x"])
+      (sort ["OPEN","x"])
       (S.toList $ symbolFirstSet grammar3 (NonTerminal "T"))
    )
 firstSetB3 = TestCase (
    assertEqual "First set of B in grammar 3"
-      (sort ["","*"])
+      (sort ["","PRODUCT"])
       (S.toList $ symbolFirstSet grammar3 (NonTerminal "B"))
    )
 firstSetF3 = TestCase (
    assertEqual "First set of F in grammar 3"
-      (sort ["(","x"])
+      (sort ["OPEN","x"])
       (S.toList $ symbolFirstSet grammar3 (NonTerminal "F"))
    )
 
 followSetS1 = TestCase (
    assertEqual "Follow set of S in grammar 1"
-      (sort [")", ""])
+      (sort ["CLOSE", ""])
       (S.toList $ followSet grammar1 (NonTerminal "S"))
    )
 followSetSp1 = TestCase (
    assertEqual "Follow set of Sp in grammar 1"
-      (sort [")",""])
+      (sort ["CLOSE",""])
       (S.toList $ followSet grammar1 (NonTerminal "Sp"))
    )
 followSetE1 = TestCase (
    assertEqual "Follow set of E in grammar 1"
-      (sort ["+",")",""])
+      (sort ["PLUS","CLOSE",""])
       (S.toList $ followSet grammar1 (NonTerminal "E"))
    )
 
@@ -115,27 +111,27 @@ followSetB2 = TestCase (
 
 followSetS3 = TestCase (
    assertEqual "Follow set of S in grammar 3"
-      (sort [")",""])
+      (sort ["CLOSE",""])
       (S.toList $ followSet grammar3 (NonTerminal "S"))
    )
 followSetA3 = TestCase (
    assertEqual "Follow set of A in grammar 3"
-      (sort [")",""])
+      (sort ["CLOSE",""])
       (S.toList $ followSet grammar3 (NonTerminal "A"))
    )
 followSetT3 = TestCase (
    assertEqual "Follow set of T in grammar 3"
-      (sort ["+",")",""])
+      (sort ["PLUS","CLOSE",""])
       (S.toList $ followSet grammar3 (NonTerminal "T"))
    )
 followSetB3 = TestCase (
    assertEqual "Follow set of B in grammar 3"
-      (sort ["+",")",""])
+      (sort ["PLUS","CLOSE",""])
       (S.toList $ followSet grammar3 (NonTerminal "B"))
    )
 followSetF3 = TestCase (
    assertEqual "Follow set of F in grammar 3"
-      (sort ["+","*",")",""])
+      (sort ["PLUS","PRODUCT","CLOSE",""])
       (S.toList $ followSet grammar3 (NonTerminal "F"))
    )
 

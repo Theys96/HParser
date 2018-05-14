@@ -1,15 +1,20 @@
+%token PLUS PRODUCT x OPEN CLOSE
+%start S
+
+%%
+
 S : T A;
 
-A : '+' T A
+A : PLUS T A
   | 
   ;
 
 T : F B ;
 
-B : '*' F B
+B : PRODUCT F B
   | 
   ;
 
-F : '(' S ')'
-  | 'x'
+F : OPEN S CLOSE
+  | x
   ;
