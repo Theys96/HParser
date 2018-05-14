@@ -25,17 +25,17 @@ grammar4 = Grammar (NonTerminal "S") [
 
 firstSetS1 = TestCase (
    assertEqual "First set of S in grammar 1"
-      (sort ["1", "("])
+      (sort ["ONE", "OPEN"])
       (S.toList $ symbolFirstSet grammar1 (NonTerminal "S"))
    )
 firstSetSp1 = TestCase (
    assertEqual "First set of Sp in grammar 1"
-      (sort ["+",""])
+      (sort ["PLUS",""])
       (S.toList $ symbolFirstSet grammar1 (NonTerminal "Sp"))
    )
 firstSetE1 = TestCase (
    assertEqual "First set of E in grammar 1"
-      (sort ["1","("])
+      (sort ["ONE","OPEN"])
       (S.toList $ symbolFirstSet grammar1 (NonTerminal "E"))
    )
 
@@ -83,17 +83,17 @@ firstSetF3 = TestCase (
 
 followSetS1 = TestCase (
    assertEqual "Follow set of S in grammar 1"
-      (sort [")", ""])
+      (sort ["CLOSE", ""])
       (S.toList $ followSet grammar1 (NonTerminal "S"))
    )
 followSetSp1 = TestCase (
    assertEqual "Follow set of Sp in grammar 1"
-      (sort [")",""])
+      (sort ["CLOSE",""])
       (S.toList $ followSet grammar1 (NonTerminal "Sp"))
    )
 followSetE1 = TestCase (
    assertEqual "Follow set of E in grammar 1"
-      (sort ["+",")",""])
+      (sort ["PLUS","CLOSE",""])
       (S.toList $ followSet grammar1 (NonTerminal "E"))
    )
 
