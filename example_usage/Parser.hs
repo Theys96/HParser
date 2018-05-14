@@ -1,4 +1,4 @@
-module Parser (Token (..), TokenTuple (..), Leaf (..), ParseTree (..), parser, parseTree, printParseTree) where
+module Parser (Token (..), NonTerminal (..), TokenTuple (..), Leaf (..), ParseTree (..), parser, parseTree, printParseTree) where
 
 import Data.Tree
 import Debug.Trace
