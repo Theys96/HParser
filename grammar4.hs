@@ -3,6 +3,7 @@ module Grammar4 (grammar4) where
 import HParser.Grammar
 import HParser.Generator
 
-grammar4 = Grammar (NonTerminal "a") [
+-- This is a corrupt grammar for testing
+grammar4 = Grammar (Terminal "a") [
    Rule (Terminal "a") [Terminal "aa"]
-]
+   ]
