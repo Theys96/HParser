@@ -21,3 +21,4 @@ cabal.project.local
 .HTF/
 test
 HGrammar/HGrammar
+example_usage/Main

@@ -82,7 +82,7 @@ genParser grammar name
       confictWarningText  = "*** Warning: Conflict(s) in grammar definition.\n" ++
                             "    Notice that this will cause the parser to throw a warning \n" ++
                             "    when running it and make it choose the first rule."
-      parser = "module "++name++" (Token (..), TokenTuple (..), ParseTree (..), parser, parseTree, printParseTree) where\n\n"++
+      parser = "module "++name++" (Token (..), NonTerminal (..), TokenTuple (..), Leaf (..), ParseTree (..), parser, parseTree, printParseTree) where\n\n"++
                "import Data.Tree\nimport Debug.Trace\nimport Control.Arrow\n\n" ++
                "-- GRAMMAR-SPECIFIC PARSER CODE\n" ++
                "data Token = " ++ (intercalate " | " (terminalNames grammar)) ++ "\n" ++
