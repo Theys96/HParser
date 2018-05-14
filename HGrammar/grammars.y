@@ -110,7 +110,7 @@ void writeRules(char* lhs, StringListList rhs) {
     if (!noRules) {
       fprintf(out, ",\n");
     }
-    fprintf(out, "\tRule (NonTerminal \"%s\") [", lhs);
+    fprintf(out, "   Rule (NonTerminal \"%s\") [", lhs);
     s = 0;
     while (rhs.list[i][s] != NULL) {
       if (s != 0) {
@@ -130,7 +130,7 @@ void writeRules(char* lhs, StringListList rhs) {
 }
 
 void writeGrammarEnd() {
-  fprintf(out, "\n]\n");
+  fprintf(out, "\n   ]\n");
 }
 
 void initParser(char* inputName) {
