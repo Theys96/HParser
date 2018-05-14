@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.org/Theys96/HParser.svg?branch=master)](https://travis-ci.org/Theys96/HParser)
 
-[Module reference](https://htmlpreview.github.io/?https://raw.githubusercontent.com/Theys96/HParser/develop/docs/index.html)
+[Module reference](https://htmlpreview.github.io/?https://raw.githubusercontent.com/Theys96/HParser/master/docs/index.html)
 
 # HParser
 A parser generator in Haskell (and a bit of C) for Haskell.
